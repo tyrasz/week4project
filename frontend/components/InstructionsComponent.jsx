@@ -32,7 +32,8 @@ export default function InstructionsComponent() {
 
       <div className={styles.buttons_container}>
         <PageBody></PageBody>
-        1. Vote 2. Delegate 3. Query results
+        1. Vote
+        <VoteForProposal></VoteForProposal>2. Delegate 3. Query results
         <WinningProposal></WinningProposal> Request tokens via API
       </div>
       <div className={styles.footer}>Footer</div>
@@ -113,6 +114,35 @@ function ApiInfo() {
       <p>{data.email}</p>
     </div>
   );
+}
+
+function VoteForProposal() {
+  const { data: signer } = useSigner();
+  return (
+    <button
+      onClick={() => {
+        voteForProposal(signer);
+      }}
+    >
+      Vote
+    </button>
+  );
+}
+
+function voteForProposal(signer) {
+  const contractAddress = "0x15ee8271f3808134b76c9e0e69e9db4a687d5dcf";
+  const contractABI = contractJson.abi;
+  const contract = new ethers.Contract(
+    contractAddress,
+    contractJson.abi,
+    signer
+  );
+  const voteTx = contract
+    .connect(signer)
+    .vote(0, ethers.utils.parseUnits("1000", 18), {
+      gasLimit: 1000000,
+    });
+  console.log(voteTx);
 }
 
 function WinningProposal() {
